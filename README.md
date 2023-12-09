@@ -94,7 +94,66 @@ Utilizando já nosso container appium server (appium-container), instale o app u
 docker cp protect.budgetwatch_28.apk appium-container:/tmp && docker exec -it appium-container adb install -t /tmp/protect.budgetwatch_28.apk
 ```
 
-## Passo 6 - Configure seu pytest com Docker
+## Passo 6 - Teste o appium server
+
+Para testar, basta instalar e abrir o app Appium Inspector, antigo Appium Desktop. Basta acessar localhost ou o IP do container se estiver full no linux. Não se esqueça de adicionar os parâmetros do aapPackage, da activity e a ferramenta de automação. Veja no exemplo abaixo:
+
+![image](https://github.com/diogosm/android-app-test-in-docker/assets/1641686/6771dfc5-92c6-459f-9b73-bf72411ac5e1)
+
+Pós conectado:
+
+![image](https://github.com/diogosm/android-app-test-in-docker/assets/1641686/359db070-7258-41ea-a58b-a2eb4ed60575)
+
+## Passo 7 - Configure seu pytest com Docker
+
+Para rodar seu programa pytest com python usando appium e docker, primeiro crie uma imagem para um container docker. no Dockerfile disponível nesse repositório há a construção da imagem bem como a instalação do pacote do Appium necessário para execução e do pacote do pytest. Fique a vontade para customizar.
+
+Por mim, construa a imagem e execute seu código, que será explicado no Passo 8.
+
+``` bash
+docker build -t my-appium-app . && docker run my-appium-app
+```
+
+Repare que este código executa um `pytest` com as flags de stacktrace e verbose ativadas (--pdb e -v). Se precisar executar apenas um teste específico dentro do seu código, ao invés de todos (comportamento padrão), mude o CMD para:
+
+``` bash
+CMD ["pytest","-rA", "-k", "test_app_expense_add_noName_noValue", "budget_test.py"]
+```
+
+No qual `-k teste` executa a função para realizar um teste, cujo nome é `teste`. Fique atento aos possíveis parâmetros do pytest.
+
+Exemplo pós execução:
+
+![image](https://github.com/diogosm/android-app-test-in-docker/assets/1641686/8aabcc82-4236-4284-b78a-b2b9948b6cf5)
+
+## Passo 8 - Executando os testes com pytest
+
+Agora que todo o ambiente está construído e executando, os principais passos restante estão associados ao seu código de teste. O principal deles está relacionado a execução, mude as variáveis de configuração para:
+
+``` python
+desired_caps = {}
+desired_caps['platformName'] = 'Android'
+desired_caps['appium:automationName'] = 'uiautomator2'
+desired_caps['deviceName'] = '192.168.100.28:5555'   ## device via tcp ip mode
+desired_caps['appPackage'] = 'protect.budgetwatch'
+desired_caps['appActivity'] = '.MainActivity'
+desired_caps['autoGrantPermissions'] = 'true'
+
+capabilities_options = UiAutomator2Options().load_capabilities(desired_caps)
+
+self.driver = webdriver.Remote('http://172.17.0.2:4723', options=capabilities_options)
+self.driver.implicitly_wait(10)
+```
+
+**Lembre-se** de que tal teste está executando dentro de um container, logo ele não tem acesso a sua rede (localhost por exemplo, pois o localhost dele é o próprio container), então utilize o ip do container que está rodando ao Appium server ou appium-container. Para isso, verifique o IP do **container** usando:
+
+``` bash
+docker inspect appium-container
+```
+
+Procure por `IPAddress`. Exemplo:
+
+![image](https://github.com/diogosm/android-app-test-in-docker/assets/1641686/213f39b9-4d3e-455d-bc7c-b60a85cf7dea)
 
 
 # EN
