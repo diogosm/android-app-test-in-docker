@@ -66,6 +66,303 @@ class AndroidBudget(unittest.TestCase):
         self.driver.implicitly_wait(30)
 
     '''
+        Tenta add uma expense com date correta
+    '''
+    def test_app_expense_add_date_correta(self):
+        ## skippa a intro
+        ## @TODO transformar em funcao
+        if self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Welcome to Budget Watch')]"):
+            skip = self.driver.find_element(By.ID, 'protect.budgetwatch:id/skip')
+            skip.click()
+            self.driver.implicitly_wait(30)
+
+        # clicar em Transactions
+        transactions= self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Transactions')]")
+        transactions.click()
+
+        ## add expense
+        add = self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_add')
+        add.click()
+
+        ## add valores (name)
+        name = self.driver.find_element(By.ID, 'protect.budgetwatch:id/nameEdit')
+        name.send_keys(ExpenseData.name)
+        value = self.driver.find_element(By.ID, 'protect.budgetwatch:id/valueEdit')
+        value.send_keys(ExpenseData.value)
+        ## add date
+        #expenseDataAux = ExpenseData(self.driver)
+        date = self.driver.find_element(By.ID, 'protect.budgetwatch:id/dateEdit')
+        #Log.logger("Trying a data futura: " + str(expenseDataAux.date_wrong))
+        #date.send_keys(expenseDataAux.date_wrong)
+        Log.logger("Trying a data futura: " + str(ExpenseData.date_correct))
+        date.clear()
+        date.send_keys(ExpenseData.date_correct)
+
+        ## salva
+        self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_save').click()
+
+        ## coleta o erro SE HOUVER
+        ##  basicamenteo procura pelo novo dado inserido
+        self.assertEqual(
+            self.driver.find_element(By.XPATH,
+                                     f'//android.widget.TextView[@resource-id="protect.budgetwatch:id/name" and @text="{ExpenseData.name}"]').get_attribute(
+                "text"),
+            ExpenseData.name,
+            ErrorData.expense_add_date_invalid_msg
+        )
+        self.driver.implicitly_wait(90)
+
+    '''
+        Tenta add uma expense com date errada
+    '''
+    def test_app_expense_add_date_errada(self):
+        ## skippa a intro
+        ## @TODO transformar em funcao
+        if self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Welcome to Budget Watch')]"):
+            skip = self.driver.find_element(By.ID, 'protect.budgetwatch:id/skip')
+            skip.click()
+            self.driver.implicitly_wait(30)
+
+        # clicar em Transactions
+        transactions= self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Transactions')]")
+        transactions.click()
+
+        ## add expense
+        add = self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_add')
+        add.click()
+
+        ## add valores (name)
+        name = self.driver.find_element(By.ID, 'protect.budgetwatch:id/nameEdit')
+        name.send_keys(ExpenseData.name)
+        value = self.driver.find_element(By.ID, 'protect.budgetwatch:id/valueEdit')
+        value.send_keys(ExpenseData.value)
+        ## add date
+        #expenseDataAux = ExpenseData(self.driver)
+        date = self.driver.find_element(By.ID, 'protect.budgetwatch:id/dateEdit')
+        #Log.logger("Trying a data futura: " + str(expenseDataAux.date_wrong))
+        #date.send_keys(expenseDataAux.date_wrong)
+        Log.logger("Trying a data futura: " + str(ExpenseData.date_wrong3))
+        date.clear()
+        date.send_keys(ExpenseData.date_wrong3)
+
+        ## salva
+        self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_save').click()
+
+        ## coleta o erro SE HOUVER
+        error_save = self.driver.find_element(By.ID, 'protect.budgetwatch:id/snackbar_text')
+        ## @TODO verificar a linha vermelha!!! mas nao tem esse componente
+        assert ErrorData.expense_add_data_invalid in \
+               error_save.text, \
+            ErrorData.expense_add_date_invalid_msg
+        self.driver.implicitly_wait(90)
+
+    '''
+        Tenta add uma expense com date no futuro
+    '''
+    def test_app_expense_add_date(self):
+        ## skippa a intro
+        ## @TODO transformar em funcao
+        if self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Welcome to Budget Watch')]"):
+            skip = self.driver.find_element(By.ID, 'protect.budgetwatch:id/skip')
+            skip.click()
+            self.driver.implicitly_wait(30)
+
+        # clicar em Transactions
+        transactions= self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Transactions')]")
+        transactions.click()
+
+        ## add expense
+        add = self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_add')
+        add.click()
+
+        ## add valores (name)
+        name = self.driver.find_element(By.ID, 'protect.budgetwatch:id/nameEdit')
+        name.send_keys(ExpenseData.name)
+        value = self.driver.find_element(By.ID, 'protect.budgetwatch:id/valueEdit')
+        value.send_keys(ExpenseData.value)
+        ## add date
+        #expenseDataAux = ExpenseData(self.driver)
+        date = self.driver.find_element(By.ID, 'protect.budgetwatch:id/dateEdit')
+        #Log.logger("Trying a data futura: " + str(expenseDataAux.date_wrong))
+        #date.send_keys(expenseDataAux.date_wrong)
+        Log.logger("Trying a data futura: " + str(ExpenseData.date_wrong2))
+        date.clear()
+        date.send_keys(ExpenseData.date_wrong2)
+
+        ## salva
+        self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_save').click()
+
+        ## coleta o erro SE HOUVER
+        error_save = self.driver.find_element(By.ID, 'protect.budgetwatch:id/snackbar_text')
+        ## @TODO verificar a linha vermelha!!! mas nao tem esse componente
+        assert ErrorData.expense_add_data_invalid in \
+               error_save.text, \
+            ErrorData.expense_add_date_invalid_msg
+        self.driver.implicitly_wait(90)
+
+    '''
+        Tenta add uma expense sem name
+    '''
+    def test_app_expense_add_note(self):
+        ## skippa a intro
+        ## @TODO transformar em funcao
+        if self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Welcome to Budget Watch')]"):
+            skip = self.driver.find_element(By.ID, 'protect.budgetwatch:id/skip')
+            skip.click()
+            self.driver.implicitly_wait(30)
+
+        # clicar em Transactions
+        transactions= self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Transactions')]")
+        transactions.click()
+
+        ## add expense
+        add = self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_add')
+        add.click()
+
+        ## add valores (name)
+        name = self.driver.find_element(By.ID, 'protect.budgetwatch:id/nameEdit')
+        name.send_keys(ExpenseData.name)
+        value = self.driver.find_element(By.ID, 'protect.budgetwatch:id/valueEdit')
+        value.send_keys(ExpenseData.value)
+        note = self.driver.find_element(By.ID, 'protect.budgetwatch:id/noteEdit')
+        note.send_keys(ExpenseData.note_wrong)
+
+        ## salva
+        self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_save').click()
+
+        ## coleta o erro SE HOUVER
+        error_save = self.driver.find_element(By.ID, 'protect.budgetwatch:id/snackbar_text')
+        ## @TODO verificar a linha vermelha!!! mas nao tem esse componente
+        assert ErrorData.expense_add_note_invalid in \
+               error_save.text, \
+            ErrorData.expense_add_note_invalid_chars
+        self.driver.implicitly_wait(90)
+
+    '''
+        Tenta add uma expense sem name
+    '''
+    def test_app_expense_add_valueWrongValue(self):
+        ## skippa a intro
+        ## @TODO transformar em funcao
+        if self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Welcome to Budget Watch')]"):
+            skip = self.driver.find_element(By.ID, 'protect.budgetwatch:id/skip')
+            skip.click()
+            self.driver.implicitly_wait(30)
+
+        # clicar em Transactions
+        transactions= self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Transactions')]")
+        transactions.click()
+
+        ## add expense
+        add = self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_add')
+        add.click()
+
+        ## add valores (name)
+        name = self.driver.find_element(By.ID, 'protect.budgetwatch:id/nameEdit')
+        name.send_keys(ExpenseData.name)
+        value = self.driver.find_element(By.ID, 'protect.budgetwatch:id/valueEdit')
+        value.send_keys(ExpenseData.value_wrong)
+
+        ## salva
+        self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_save').click()
+
+        ## coleta o erro SE HOUVER
+        error_save = self.driver.find_element(By.ID, 'protect.budgetwatch:id/snackbar_text')
+        ## @TODO verificar a linha vermelha!!! mas nao tem esse componente
+        assert ErrorData.expense_add_value_invalid in \
+               error_save.text, \
+            ErrorData.expense_add_value_invalid_chars
+        self.driver.implicitly_wait(90)
+
+    '''
+        Tenta add uma expense sem name
+    '''
+    @pytest.mark.xfail
+    def test_app_expense_add_nameLowerThan2Chars(self):
+        ## skippa a intro
+        ## @TODO transformar em funcao
+        if self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Welcome to Budget Watch')]"):
+            skip = self.driver.find_element(By.ID, 'protect.budgetwatch:id/skip')
+            skip.click()
+            self.driver.implicitly_wait(30)
+
+        # clicar em Transactions
+        transactions= self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Transactions')]")
+        transactions.click()
+
+        ## add expense
+        add = self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_add')
+        add.click()
+
+        ## add valores (name)
+        name = self.driver.find_element(By.ID, 'protect.budgetwatch:id/nameEdit')
+        name.send_keys(ExpenseData.nameSmallerThan2Chars)
+        value = self.driver.find_element(By.ID, 'protect.budgetwatch:id/valueEdit')
+        value.send_keys(ExpenseData.value)
+
+        ## salva
+        self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_save').click()
+
+        ## coleta o erro SE HOUVER
+        try:
+            ## @TODO
+            #   verificar campo com valor vermelho!!!!
+            error_save = self.driver.find_element(By.ID, 'protect.budgetwatch:id/snackbar_text')
+            assert ErrorData.expense_add_noName in \
+                   error_save.text, \
+                ErrorData.expense_add_name_limit_range
+        except NoSuchElementException as e:
+            Log.logger("Exception error: " + str(e))
+            assert False, ErrorData.expense_add_name_limit_range
+        except Exception as e:
+            Log.logger("Exception error: " + str(e))
+            assert False, ErrorData.expense_add_name_limit_range
+        self.driver.implicitly_wait(30)
+
+    '''
+        Tenta add uma expense sem name
+    '''
+    @pytest.mark.xfail
+    def test_app_expense_add_nameBiggerThan20Chars(self):
+        ## skippa a intro
+        ## @TODO transformar em funcao
+        if self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Welcome to Budget Watch')]"):
+            skip = self.driver.find_element(By.ID, 'protect.budgetwatch:id/skip')
+            skip.click()
+            self.driver.implicitly_wait(30)
+
+        # clicar em Transactions
+        transactions= self.driver.find_element(By.XPATH, "//android.widget.TextView[contains(@text, 'Transactions')]")
+        transactions.click()
+
+        ## add expense
+        add = self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_add')
+        add.click()
+
+        ## add valores (name)
+        name = self.driver.find_element(By.ID, 'protect.budgetwatch:id/nameEdit')
+        name.send_keys(ExpenseData.nameBiggerThan20Chars)
+        value = self.driver.find_element(By.ID, 'protect.budgetwatch:id/valueEdit')
+        value.send_keys(ExpenseData.value)
+
+        ## salva
+        self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_save').click()
+
+        ## coleta o erro SE HOUVER
+        try:
+            error_save = self.driver.find_element(By.ID, 'protect.budgetwatch:id/snackbar_text')
+            assert ErrorData.expense_add_noName in \
+                   error_save.text, \
+                ErrorData.expense_add_name_limit_range
+        except NoSuchElementException as e:
+            Log.logger("Exception error: " + str(e))
+            assert False, ErrorData.expense_add_name_limit_range
+        except Exception as e:
+            Log.logger("Exception error: " + str(e))
+            assert False, ErrorData.expense_add_name_limit_range
+        self.driver.implicitly_wait(30)
+
+    '''
         Tenta add uma expense sem name
     '''
     @pytest.mark.xfail
@@ -102,10 +399,10 @@ class AndroidBudget(unittest.TestCase):
                 ErrorData.expense_add_noName_test_failed
         except NoSuchElementException as e:
             Log.logger("Exception error: " + str(e))
-            assert ErrorData.expense_add_noName_test_failed
+            assert False, ErrorData.expense_add_noName_test_failed
         except Exception as e:
             Log.logger("Exception error: " + str(e))
-            assert ErrorData.expense_add_noName_test_failed
+            assert False, ErrorData.expense_add_noName_test_failed
         self.driver.implicitly_wait(30)
 
     '''
@@ -137,11 +434,18 @@ class AndroidBudget(unittest.TestCase):
         self.driver.find_element(By.ID, 'protect.budgetwatch:id/action_save').click()
 
         ## coleta o erro SE HOUVER
-        error_save = self.driver.find_element(By.ID, 'protect.budgetwatch:id/snackbar_text').text
-
-        assert ErrorData.expense_add_noName_noValue in \
-               self.driver.find_element(By.ID, 'protect.budgetwatch:id/snackbar_text').text, \
-            ErrorData.expense_add_noName_noValue_test_failed
+        try:
+            error_save = self.driver.find_element(By.ID, 'protect.budgetwatch:id/snackbar_text')
+            assert ErrorData.expense_add_noValue in \
+                   error_save.text, \
+                ErrorData.expense_add_noValue_test_failed
+        except NoSuchElementException as e:
+            Log.logger("Exception error: " + str(e))
+            assert False, ErrorData.expense_add_noName_test_failed
+        except Exception as e:
+            Log.logger("Exception error: " + str(e))
+            assert False, ErrorData.expense_add_noName_test_failed
+        self.driver.implicitly_wait(30)
 
     '''
         Tenta remove uma expense depois de um transaction
